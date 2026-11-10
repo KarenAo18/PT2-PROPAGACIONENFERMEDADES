@@ -1,0 +1,631 @@
+
+/* =========================================
+   SIMULADOR EPIDEMIOLÓGICO - TEMA PROFESIONAL
+   ========================================= */
+
+:root {
+  color-scheme: dark;
+  --fondo: #0a1020;
+  --panel: #121c2e;
+  --panel-hover: #18263c;
+  --borde: #293952;
+  --texto: #edf3ff;
+  --texto-secundario: #9cacc4;
+  --verde: #38d9a0;
+  --rojo: #ff6577;
+  --azul: #69a9ff;
+  --morado: #9b8cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 28px;
+  color: var(--texto);
+  background:
+    radial-gradient(ellipse at 15% 0%, #1a2c4c 0%, transparent 42%),
+    var(--fondo);
+  font-family: "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* ENCABEZADO */
+
+header {
+  max-width: 1600px;
+  margin: 0 auto 26px;
+  padding: 26px 30px;
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+  background: linear-gradient(120deg, #172943, #111a2c);
+  box-shadow: 0 14px 35px #00000025;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  letter-spacing: -0.04em;
+}
+
+header p {
+  margin: 8px 0 0;
+  color: var(--texto-secundario);
+}
+
+/* DISTRIBUCIÓN PRINCIPAL */
+
+main {
+  display: grid;
+  grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+/* TARJETAS */
+
+.panel,
+.mapa,
+.simulacion {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #152238, #101929);
+  box-shadow: 0 12px 30px #00000020;
+}
+
+.panel h2,
+.mapa h2,
+.simulacion h2 {
+  margin: 0 0 18px;
+  font-size: 1.12rem;
+  font-weight: 650;
+}
+
+.panel h2::before,
+.mapa h2::before,
+.simulacion h2::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 17px;
+  margin-right: 10px;
+  border-radius: 5px;
+  background: var(--morado);
+  vertical-align: -3px;
+}
+
+/* PRIMER PANEL: SELECTOR DE LUGAR */
+
+main > .panel:first-child {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* SEGUNDO PANEL: CONFIGURACIÓN */
+
+main > .panel:nth-child(2) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* FORMULARIOS */
+
+.panel label {
+  display: block;
+  margin: 15px 0 6px;
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+}
+
+input,
+select,
+gmp-place-autocomplete {
+  max-width: 100%;
+  font: inherit;
+}
+
+.panel input,
+.panel select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: var(--texto);
+  background: #0b1424;
+  border: 1px solid var(--borde);
+  border-radius: 9px;
+}
+
+.panel input:focus,
+.panel select:focus {
+  outline: 2px solid var(--morado);
+  outline-offset: 2px;
+}
+
+#buscadorLugar {
+  display: block;
+  width: 100%;
+  margin: 10px 0 18px;
+}
+
+#datosLugar {
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-radius: 11px;
+  background: #0c1627;
+  overflow-wrap: anywhere;
+}
+
+#datosLugar p {
+  margin: 7px 0;
+  font-size: 0.88rem;
+}
+
+#datosLugar strong {
+  color: var(--texto);
+}
+
+#resultado {
+  margin-top: 12px;
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+}
+
+hr {
+  margin: 24px 0;
+  border: 0;
+  border-top: 1px solid var(--borde);
+}
+
+/* BOTONES */
+
+button {
+  min-height: 42px;
+  padding: 10px 15px;
+  color: var(--texto);
+  background: var(--panel-hover);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+  background: #263956;
+  transform: translateY(-1px);
+}
+
+#iniciar,
+#reiniciar {
+  width: 100%;
+  margin-top: 12px;
+}
+
+#iniciar {
+  color: #071a18;
+  background: var(--verde);
+  border-color: var(--verde);
+}
+
+#iniciar:hover {
+  background: #62e8b8;
+}
+
+#reiniciar {
+  background: transparent;
+}
+
+/* MAPA */
+
+.mapa {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+}
+
+#mapaGoogle {
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+}
+
+/* SIMULACIÓN 3D */
+
+.simulacion {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+#three-container {
+  width: 100%;
+  height: 560px;
+  min-height: 350px;
+  overflow: hidden;
+  border: 1px solid #344966;
+  border-radius: 13px;
+  background: #080f1d;
+}
+
+#three-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ESTADÍSTICAS */
+
+.estadisticas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+  padding: 0;
+}
+
+.estadisticas div {
+  padding: 17px;
+  text-align: center;
+  background: #0d1728;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+}
+
+.estadisticas strong {
+  display: block;
+  color: var(--texto-secundario);
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.estadisticas span {
+  display: block;
+  margin-top: 6px;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+#susceptibles {
+  color: var(--verde);
+}
+
+#infectados {
+  color: var(--rojo);
+}
+
+#recuperados {
+  color: var(--azul);
+}
+
+/* ADAPTACIÓN A PANTALLAS PEQUEÑAS */
+
+@media (max-width: 850px) {
+  body {
+    padding: 14px;
+  }
+
+  main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    gap: 14px;
+  }
+
+  main > .panel:first-child,
+  main > .panel:nth-child(2),
+  .mapa,
+  .simulacion {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  #mapaGoogle {
+    min-height: 300px;
+  }
+
+  #three-container {
+    height: 420px;
+  }
+}
+
+@media (max-width: 480px) {
+  header,
+  .panel,
+  .mapa,
+  .simulacion {
+    padding: 16px;
+  }
+
+  .estadisticas {
+    gap: 7px;
+  }
+
+  .estadisticas div {
+    padding: 10px 5px;
+  }
+
+  .estadisticas strong {
+    font-size: 0.75rem;
+  }
+}
+
+
+/* PANEL DE LA GRÁFICA EPIDEMIOLÓGICA */
+#panel-grafica {
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 18px;
+    box-sizing: border-box;
+    background: #171d2b;
+    border: 1px solid #344157;
+    border-radius: 12px;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+#panel-grafica h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+}
+
+#graficaEpidemiologica {
+    display: block;
+    width: 100%;
+    height: 260px;
+}
+
+.leyenda-grafica {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+
+/* TARJETAS DE INDICADORES EPIDEMIOLÓGICOS */
+
+#indicadores-epidemiologicos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    margin: 18px 0;
+    font-family: Arial, sans-serif;
+}
+
+.tarjeta-indicador {
+    background: #171d2b;
+    border: 1px solid #344157;
+    border-radius: 12px;
+    padding: 18px 14px;
+    min-width: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tarjeta-indicador span {
+    color: #b8c4d6;
+    font-size: 13px;
+}
+
+.tarjeta-indicador strong {
+    color: #ffffff;
+    font-size: 27px;
+    font-weight: 700;
+}
+
+.tarjeta-indicador:nth-child(1) strong {
+    color: #ff5555;
+}
+
+.tarjeta-indicador:nth-child(2) strong {
+    color: #ffad42;
+}
+
+.tarjeta-indicador:nth-child(3) strong {
+    color: #00d9ff;
+}
+
+.tarjeta-indicador:nth-child(4) strong {
+    color: #2196f3;
+}
+
+@media (max-width: 700px) {
+    #indicadores-epidemiologicos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+#pausar {
+    padding: 10px 18px;
+    border: 1px solid #00d9ff;
+    border-radius: 8px;
+    background: #17283a;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#pausar:hover:not(:disabled) {
+    background: #21425c;
+}
+
+#pausar:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+
+/* Selector y descripción de los tres recintos */
+.descripcion-escenario {
+    margin: 10px 0 4px;
+    padding: 12px 13px;
+    border: 1px solid #344966;
+    border-left: 3px solid var(--morado);
+    border-radius: 9px;
+    background: #0b1424;
+    color: var(--texto-secundario);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+#escenarioSimulacion {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    color: var(--texto);
+    background: #0b1424;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    font: inherit;
+}
+
+#escenarioSimulacion:focus {
+    outline: 2px solid var(--morado);
+    outline-offset: 2px;
+}
+
+/* AJUSTE COMPACTO: MAPA E INDICADORES */
+@media (min-width: 851px) {
+  main {
+    grid-template-columns: minmax(270px, 340px) minmax(300px, 420px);
+    justify-content: space-between;
+    align-items: start;
+  }
+
+  .mapa {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 100%;
+    max-width: 420px;
+    padding: 16px;
+    align-self: start;
+  }
+
+  #mapaGoogle {
+    height: 250px;
+    min-height: 250px;
+    max-height: 250px;
+  }
+
+  .simulacion {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+#indicadores-epidemiologicos {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.tarjeta-indicador {
+  padding: 10px 9px;
+  gap: 5px;
+  border-radius: 9px;
+}
+
+.tarjeta-indicador span {
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.tarjeta-indicador strong {
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+@media (max-width: 850px) {
+  .mapa {
+    width: 100%;
+    max-width: none;
+  }
+
+  #mapaGoogle {
+    height: 230px;
+    min-height: 230px;
+    max-height: 230px;
+  }
+}
+
+@media (max-width: 520px) {
+  #indicadores-epidemiologicos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* DISTRIBUCIÓN: MAPA BAJO EL DISEÑO Y SIMULACIÓN 3D A LA DERECHA */
+@media (min-width: 851px) {
+  main {
+    grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    column-gap: 20px;
+    row-gap: 16px;
+    align-items: stretch;
+  }
+
+  main > .panel:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .mapa {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    max-width: none;
+    padding: 16px;
+    align-self: start;
+  }
+
+  #mapaGoogle {
+    width: 100%;
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+  }
+
+  main > .panel:nth-child(3) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .simulacion {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    min-width: 0;
+    align-self: stretch;
+  }
+
+  #three-container {
+    height: 560px;
+  }
+}
+
+@media (max-width: 850px) {
+  .mapa { order: initial; }
+  #mapaGoogle {
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+  }
+}

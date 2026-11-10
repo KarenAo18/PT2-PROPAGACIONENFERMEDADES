@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Simulador de propagación en conciertos</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/"
+        }
+    }
+    </script>
+
+    
+    <!-- OpenStreetMap: mapa gratuito con Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+
+
+</head>
+
+<body>
+
+    <header>
+        <h1>Simulador de propagación de enfermedades</h1>
+        <p>Simulación basada en agentes para eventos masivos</p>
+    </header>
+
+    <main>
+
+        <!-- SELECTOR DE LUGARES -->
+        <section class="panel">
+
+            
+            <h2>Diseño del recinto</h2>
+            <label for="escenarioSimulacion">Selecciona la forma del concierto</label>
+            <select id="escenarioSimulacion">
+                <option value="A">Opción A — Circular</option>
+                <option value="B">Opción B — Rectangular</option>
+                <option value="C">Opción C — Irregular por zonas</option>
+            </select>
+            <p id="descripcionEscenario" class="descripcion-escenario">
+                Recinto circular: distribución alrededor de la zona central y barreras curvas.
+            </p>
+
+            <hr>
+        </section>
+
+        <!-- MAPA DE UBICACIÓN DEL CONCIERTO -->
+        <section class="mapa">
+            <h2>Ubicación del concierto</h2>
+            <div id="mapaGoogle"></div>
+        </section>
+
+        <!-- PANEL DE CONFIGURACIÓN -->
+        <section class="panel">
+
+            <h2>Configuración del concierto</h2>
+
+            <label for="estadioReal">
+                Selecciona un estadio o recinto real de México
+            </label>
+
+            <select id="estadioReal">
+                <option value="">Selecciona un estadio...</option>
+                <option value="azteca">Estadio Azteca — Ciudad de México</option>
+                <option value="olimpico">Estadio Olímpico Universitario — CDMX</option>
+                <option value="palacio">Palacio de los Deportes — CDMX</option>
+                <option value="akron">Estadio Akron — Guadalajara</option>
+                <option value="bbva">Estadio BBVA — Monterrey</option>
+            </select>
+
+            <p class="descripcion-escenario">
+                Selecciona un recinto para mostrar su ubicación real
+                en el mapa y una recreación aproximada en 3D.
+            </p>
+
+
+
+            <!-- Información del recinto seleccionado -->
+            <div id="datosLugar">
+                <p>
+                    <strong>Lugar:</strong>
+                    <span id="nombreLugar">-</span>
+                </p>
+
+                <p>
+                    <strong>Dirección:</strong>
+                    <span id="direccionLugar">-</span>
+                </p>
+
+                <p>
+                    <strong>Coordenadas:</strong>
+                    <span id="coordenadasLugar">-</span>
+                </p>
+            </div>
+
+            <hr>
+
+           
+
+            <h2>Parámetros de simulación</h2>
+
+            <label for="numeroAsistentes">
+                Número de asistentes
+            </label>
+            <input
+                type="number"
+                id="numeroAsistentes"
+                value="100"
+                min="10"
+                max="1000"
+            >
+
+            <label for="infectadosIniciales">
+                Infectados iniciales
+            </label>
+            <input
+                type="number"
+                id="infectadosIniciales"
+                value="1"
+                min="1"
+            >
+
+            <label for="porcentajeMascarillas">
+                Porcentaje de cubrebocas
+            </label>
+            <input
+                type="number"
+                id="porcentajeMascarillas"
+                value="50"
+                min="0"
+                max="100"
+            >
+
+            <label for="radioContagio">
+                Radio de contagio (metros)
+            </label>
+            <input
+                type="number"
+                id="radioContagio"
+                value="0.40"
+                min="0.1"
+                max="5"
+                step="0.1"
+            >
+
+            <label for="probabilidad">
+                Probabilidad de transmisión (%)
+            </label>
+            <input
+                type="number"
+                id="probabilidad"
+                value="20"
+                min="0"
+                max="100"
+            >
+
+            <label for="velocidad">
+                Velocidad de movimiento
+            </label>
+            <input
+                type="number"
+                id="velocidad"
+                value="0.02"
+                min="0.001"
+                max="1"
+                step="0.001"
+            >
+
+            <button id="iniciar" type="button">
+                Iniciar simulación
+            </button>
+
+            <button id="reiniciar" type="button">
+                Reiniciar
+            </button>
+            
+            <button id="pausar" type="button" disabled>
+                Pausar simulación
+            </button>
+
+
+        </section>
+
+        <!-- SIMULACIÓN THREE.JS -->
+        <section class="simulacion">
+
+            <h2>Simulación 3D</h2>
+
+            <div id="three-container"></div>
+
+            <div class="estadisticas">
+
+                <div>
+                    <strong>Susceptibles</strong>
+                    <span id="susceptibles">0</span>
+                </div>
+
+                <div>
+                    <strong>Infectados</strong>
+                    <span id="infectados">0</span>
+                </div>
+
+                <div>
+                    <strong>Recuperados</strong>
+                    <span id="recuperados">0</span>
+                </div>
+
+                
+                <div id="panel-grafica">
+                    <h3>Evolución de la propagación</h3>
+                    <canvas id="graficaEpidemiologica"></canvas>
+                    <div class="leyenda-grafica">
+                        <span>🟢 Susceptibles</span>
+                        <span>🔴 Infectados</span>
+                        <span>🔵 Recuperados</span>
+                    </div>
+                </div>
+
+
+                            
+            <!-- INDICADORES EPIDEMIOLÓGICOS -->
+            <div id="indicadores-epidemiologicos">
+
+                <div class="tarjeta-indicador">
+                    <span>Infectados actuales</span>
+                    <strong id="porcentajeInfectados">0%</strong>
+                </div>
+
+                <div class="tarjeta-indicador">
+                    <span>Pico de infección</span>
+                    <strong id="picoInfectados">0</strong>
+                </div>
+
+                <div class="tarjeta-indicador">
+                    <span>Tiempo transcurrido</span>
+                    <strong id="tiempoTranscurrido">0 s</strong>
+                </div>
+
+                <div class="tarjeta-indicador">
+                    <span>Personas recuperadas</span>
+                    <strong id="porcentajeRecuperados">0%</strong>
+                </div>
+
+            </div>
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Lógica de la simulación -->
+    <script type="module" src="main.js"></script>
+
+</body>
+
+</html>
